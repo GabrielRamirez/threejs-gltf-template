@@ -1,0 +1,144 @@
+<html>
+  <head>
+    <title>Three JS</title>
+
+    <style>
+    body{
+      margin: 0;
+      overflow: hidden;
+    }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/104/three.js"></script>
+    <script src="GLTFLoader.js"></script>
+    <script src="OrbitControls.js"></script>
+
+    <script>
+
+
+      //Scene
+      var scene = new THREE.Scene();
+
+      //Camera
+      var camera = new THREE.PerspectiveCamera(24,window.innerWidth / window.innerHeight,1,1000);
+
+      //Canvas
+      var myCanvas = document.getElementById('myCanvas');
+
+      //Renderer
+      var renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        canvas: myCanvas,
+      });
+
+      var plane = new THREE.Plane( new THREE.Vector3( 1000, 1000, 0.2 ), 2000 );
+      var helper = new THREE.PlaneHelper( plane, 1, 0xffff00 );
+      //scene.add( helper );
+
+      //Grid helper
+      var size = 1000;
+      var divisions = 100;
+
+      var gridHelper = new THREE.GridHelper( size, divisions );
+      scene.add( gridHelper );
+
+        //Axes helper
+        var radius = 1000;
+        var radials = 16;
+        var circles = 80;
+        var divisions = 64;
+
+        var helper = new THREE.PolarGridHelper( radius, radials, circles, divisions );
+        scene.add( helper );
+
+
+      renderer.setClearColor(0x000000);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+    	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    	renderer.gammaInput = true;
+    	renderer.gammaOutput = true;
+    	renderer.antialias = true;
+      document.body.appendChild( renderer.domElement );
+
+      //LIGHTS
+      var light = new THREE.AmbientLight(0xffffff, 0.06);
+      light.power = 640;  // GE Lumens @ 60W incade.
+      light.decay = 2;
+      light.distance = Infinity;
+      light.position.set(0, 2, 0);
+      light.castShadow = true;
+      light.shadowCameraVisible = true;
+      scene.add(light);
+
+      var light2 = new THREE.PointLight(0xffffff, 0.0);
+      //scene.add(light2);
+
+
+
+      //OrbitControls
+      orbit = new THREE.OrbitControls(camera, renderer.domElement);
+      orbit.maxPolarAngle = Math.PI / 2;
+      camera.position.set( 25,200, 200 );
+      orbit.update();
+
+/**
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+
+        camera.updateProjectionMatrix();
+      })
+**/
+      // Instantiate a loader
+      var loader = new THREE.GLTFLoader();
+      loader.load('pyramid.glb', handle_load);
+
+      var mesh;
+
+      function handle_load(gltf){
+        console.log(gltf);
+        mesh = gltf.scene;
+        console.log(mesh.children[0]);
+        //mesh.children[0].material = new THREE.MeshLambertMaterial();
+        scene.add( mesh );
+        //mesh.position.z = 0;
+      }
+
+//Render loop
+//RENDER LOOP
+render();
+
+var delta = 0;
+var prevTime = Date.now();
+
+function render() {
+
+
+
+    //exposure
+    renderer.toneMappingExposure = Math.pow(0.7, 5.0);  // -> exposure: 0.168
+    renderer.render(scene, camera);
+
+  requestAnimationFrame(render);
+}
+
+/**
+      var render = function(){
+        requestAnimationFrame(render);
+
+
+
+        renderer.render(scene, camera);
+      }
+
+      render();
+**/
+    </script>
+  </body>
+
+</html>
