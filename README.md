@@ -1,2 +1,8 @@
 # threejs-gltf-template
-A starting template for loading GLTF models using Three js
+A simple GLTF/GLB Three JS template
+
+## Features
+
+* Gradient background with texture noise
+* Orbit controler
+
